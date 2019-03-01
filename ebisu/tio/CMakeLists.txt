@@ -1,0 +1,17 @@
+CMAKE_MINIMUM_REQUIRED(VERSION 3.5)
+PROJECT(tio C)
+SET(CMAKE_C_FLAGS "-Wall -std=c99")
+# Uncomment it if you need to use unsecure connection.
+#SET(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -DKII_MQTT_USE_PORT_TCP=1")
+SET(CMAKE_C_FLAGS_RELEASE "-O2")
+SET(CMAKE_C_FLAGS_DEBUG "-g -DDEBUG")
+
+FILE(GLOB srcs ./*.c ../khc/src/*.c ../kii/*.c ../jkii/src/*.c ../jkii/libs/jsmn/*.c)
+ADD_LIBRARY(tio SHARED ${srcs})
+TARGET_INCLUDE_DIRECTORIES(tio PRIVATE ${PROJECT_SOURCE_DIR} ../khc/include ../kii/include ../jkii/include ../jkii/libs/jsmn)
+TARGET_INCLUDE_DIRECTORIES(tio PUBLIC ${PROJECT_SOURCE_DIR}/include)
+SET(version "1.0.0")
+SET(soversion "1.0.0")
+SET_TARGET_PROPERTIES(tio PROPERTIES VERSION ${version} SOVERSION ${soversion})
+INSTALL(FILES include/tio.h ../khc/include/khc.h ../khc/include/khc_socket_callback.h ../kii/include/kii.h ../kii/include/kii_task_callback.h ../jkii/include/jkii.h ../jkii/include/jkii_utils.h ../jkii/libs/jsmn/jsmn.h DESTINATION include)
+INSTALL(TARGETS tio LIBRARY DESTINATION lib)
