@@ -67,8 +67,6 @@ khc_sock_code_t socket_recv_cb_impl(
     app_socket_context_t *context = (app_socket_context_t*)socket_context;
     wiced_packet_t *packet = context->packet;
     int offset = context->packet_offset;
-    printf("read:%d, packet:%d, offset:%d\n", length_to_read, packet, offset);
-
     if (packet == NULL) {
         ret = wiced_tcp_receive(&(context->socket), &packet, 10000);
         context->received_all = 0;
@@ -82,7 +80,6 @@ khc_sock_code_t socket_recv_cb_impl(
         *out_actual_length = 0;
         return KHC_SOCK_OK;
     }
-    printf("wiced_tcp_receive:%d\n", ret);
     if (ret == WICED_SUCCESS) {
         uint16_t        total;
         uint16_t        length;

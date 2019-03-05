@@ -160,7 +160,6 @@ static int onboard_command ( int argc, char *argv[] ) {
             NULL,
             NULL,
             NULL);
-    wiced_log_printf("return: %d\n", result);
     if (result != TIO_ERR_OK) {
         wiced_log_printf("failed to onboard.\n");
         wiced_log_printf("status code: %d\n", khc_get_status_code(&(handler._kii._khc)));
@@ -179,7 +178,7 @@ static int onboard_command ( int argc, char *argv[] ) {
 static const command_t commands[] =
 {
     //ALL_COMMANDS
-    {"onboard", onboard_command, 0, NULL, NULL, "[--vendor-thing-id/--thing-id]=* --passwod=*", ""},
+    {"onboard", onboard_command, 2, NULL, NULL, "[--vendor-thing-id/--thing-id]=* --passwod=*", ""},
     CMD_TABLE_END
 };
 /******************************************************
