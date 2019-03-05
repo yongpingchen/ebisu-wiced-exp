@@ -18,12 +18,10 @@ khc_sock_code_t socket_connect_cb_impl(
     if(rc != WICED_SUCCESS) {
         return KHC_SOCK_FAIL;
     }
-
-    sock_ctx = malloc(sizeof(app_socket_context_t));
-    socket_context = sock_ctx;
+//    sock_ctx = malloc(sizeof(app_socket_context_t));
     rc = wiced_tcp_create_socket(&(sock_ctx->socket), WICED_STA_INTERFACE);
     if (rc != WICED_SUCCESS) {
-        free(sock_ctx);
+//        free(sock_ctx);
         return KHC_SOCK_FAIL;
     }
 
@@ -34,12 +32,11 @@ khc_sock_code_t socket_connect_cb_impl(
 
     rc = wiced_tcp_connect(&(sock_ctx->socket), &addr, port, 10000);
     if (rc != WICED_SUCCESS) {
-        free(sock_ctx);
+//        free(sock_ctx);
         wiced_tcp_disconnect(&(sock_ctx->socket));
         wiced_tcp_delete_socket(&(sock_ctx->socket));
         return KHC_SOCK_FAIL;
     }
-    wiced_log_printf("connected\n");
     return KHC_SOCK_OK;
 }
 
@@ -51,7 +48,6 @@ khc_sock_code_t socket_send_cb_impl(
 {
     wiced_result_t ret;
     app_socket_context_t *context = (app_socket_context_t*)socket_context;
-
     ret = wiced_tcp_send_buffer(&(context->socket), buffer, length);
     if (ret == WICED_SUCCESS) {
         *out_sent_length = length;
@@ -71,12 +67,22 @@ khc_sock_code_t socket_recv_cb_impl(
     app_socket_context_t *context = (app_socket_context_t*)socket_context;
     wiced_packet_t *packet = context->packet;
     int offset = context->packet_offset;
+    printf("read:%d, packet:%d, offset:%d\n", length_to_read, packet, offset);
 
     if (packet == NULL) {
         ret = wiced_tcp_receive(&(context->socket), &packet, 10000);
+        context->received_all = 0;
         offset = 0;
     }
 
+    if (context->received_all == 1) {
+        wiced_packet_delete(packet);
+        context->packet = NULL;
+        context->packet_offset = 0;
+        *out_actual_length = 0;
+        return KHC_SOCK_OK;
+    }
+    printf("wiced_tcp_receive:%d\n", ret);
     if (ret == WICED_SUCCESS) {
         uint16_t        total;
         uint16_t        length;
@@ -91,9 +97,7 @@ khc_sock_code_t socket_recv_cb_impl(
             context->packet = packet;
             context->packet_offset = offset;
         } else {
-            wiced_packet_delete(packet);
-            context->packet = NULL;
-            context->packet_offset = 0;
+            context->received_all = 1;
         }
         return KHC_SOCK_OK;
     } else {
@@ -110,8 +114,8 @@ khc_sock_code_t socket_close_cb_impl(void* socket_context)
     }
     wiced_tcp_disconnect(&(context->socket));
     wiced_tcp_delete_socket(&(context->socket));
-    free(context);
-    socket_context = NULL;
+//    free(context);
+//    socket_context = NULL;
     return KHC_SOCK_OK;
 }
 

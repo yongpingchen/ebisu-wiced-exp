@@ -9,6 +9,7 @@ typedef struct _socket_context {
     int packet_offset;
     unsigned int to_recv;
     unsigned int to_send;
+    int received_all; // 0 or 1
 } app_socket_context_t;
 
 khc_sock_code_t socket_connect_cb_impl(

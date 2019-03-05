@@ -101,31 +101,31 @@ static char handler_mqtt_buff[EX_MQTT_BUFF_SIZE];
 static char handler_http_buff[EX_COMMAND_HANDLER_BUFF_SIZE];
 
 static int onboard_command ( int argc, char *argv[] ) {
-    char *vendorThingID = "test";
+    char *vendorThingID = "";
     char *thingID = NULL;
-    char *password = "1234";
+    char *password = "";
 
-//    for (int i = 1; i < argc; ++i) {
-//        if (strncmp(argv[i], "--vendor-thing-id=", 18) == 0) {
-//            vendorThingID = argv[i] + 18;
-//        } else if (strncmp(argv[i], "--thing-id=", 11) == 0) {
-//            thingID = argv[i] + 11;
-//        } else if (strncmp(argv[i], "--password=", 11) == 0) {
-//            password = argv[i] + 11;
-//        }
-//    }
-//    if (vendorThingID == NULL && thingID == NULL) {
-//        wiced_log_printf("neither vendor-thing-id and thing-id are specified.\n");
-//        return ERR_CMD_OK;
-//    }
-//    if (password == NULL) {
-//        wiced_log_printf("password is not specified.\n");
-//        return ERR_CMD_OK;
-//    }
-//    if (vendorThingID != NULL && thingID != NULL) {
-//        wiced_log_printf("both vendor-thing-id and thing-id is specified.  either of one should be specified.\n");
-//        return ERR_CMD_OK;
-//    }
+   for (int i = 1; i < argc; ++i) {
+       if (strncmp(argv[i], "--vendor-thing-id=", 18) == 0) {
+           vendorThingID = argv[i] + 18;
+       } else if (strncmp(argv[i], "--thing-id=", 11) == 0) {
+           thingID = argv[i] + 11;
+       } else if (strncmp(argv[i], "--password=", 11) == 0) {
+           password = argv[i] + 11;
+       }
+   }
+   if (vendorThingID == NULL && thingID == NULL) {
+       wiced_log_printf("neither vendor-thing-id and thing-id are specified.\n");
+       return ERR_CMD_OK;
+   }
+   if (password == NULL) {
+       wiced_log_printf("password is not specified.\n");
+       return ERR_CMD_OK;
+   }
+   if (vendorThingID != NULL && thingID != NULL) {
+       wiced_log_printf("both vendor-thing-id and thing-id is specified.  either of one should be specified.\n");
+       return ERR_CMD_OK;
+   }
 
     tio_handler_t handler;
     app_socket_context_t handler_http_ctx;
