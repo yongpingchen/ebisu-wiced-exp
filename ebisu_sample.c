@@ -101,31 +101,31 @@ static char handler_mqtt_buff[EX_MQTT_BUFF_SIZE];
 static char handler_http_buff[EX_COMMAND_HANDLER_BUFF_SIZE];
 
 static int onboard_command ( int argc, char *argv[] ) {
-    char *vendorThingID = "";
+    char *vendorThingID = "test2";
     char *thingID = NULL;
-    char *password = "";
+    char *password = "1234";
 
-   for (int i = 1; i < argc; ++i) {
-       if (strncmp(argv[i], "--vendor-thing-id=", 18) == 0) {
-           vendorThingID = argv[i] + 18;
-       } else if (strncmp(argv[i], "--thing-id=", 11) == 0) {
-           thingID = argv[i] + 11;
-       } else if (strncmp(argv[i], "--password=", 11) == 0) {
-           password = argv[i] + 11;
-       }
-   }
-   if (vendorThingID == NULL && thingID == NULL) {
-       wiced_log_printf("neither vendor-thing-id and thing-id are specified.\n");
-       return ERR_CMD_OK;
-   }
-   if (password == NULL) {
-       wiced_log_printf("password is not specified.\n");
-       return ERR_CMD_OK;
-   }
-   if (vendorThingID != NULL && thingID != NULL) {
-       wiced_log_printf("both vendor-thing-id and thing-id is specified.  either of one should be specified.\n");
-       return ERR_CMD_OK;
-   }
+//   for (int i = 1; i < argc; ++i) {
+//       if (strncmp(argv[i], "--vendor-thing-id=", 18) == 0) {
+//           vendorThingID = argv[i] + 18;
+//       } else if (strncmp(argv[i], "--thing-id=", 11) == 0) {
+//           thingID = argv[i] + 11;
+//       } else if (strncmp(argv[i], "--password=", 11) == 0) {
+//           password = argv[i] + 11;
+//       }
+//   }
+//   if (vendorThingID == NULL && thingID == NULL) {
+//       wiced_log_printf("neither vendor-thing-id and thing-id are specified.\n");
+//       return ERR_CMD_OK;
+//   }
+//   if (password == NULL) {
+//       wiced_log_printf("password is not specified.\n");
+//       return ERR_CMD_OK;
+//   }
+//   if (vendorThingID != NULL && thingID != NULL) {
+//       wiced_log_printf("both vendor-thing-id and thing-id is specified.  either of one should be specified.\n");
+//       return ERR_CMD_OK;
+//   }
 
     tio_handler_t handler;
     app_socket_context_t handler_http_ctx;
@@ -167,18 +167,15 @@ static int onboard_command ( int argc, char *argv[] ) {
     } else {
         wiced_log_printf("onboard succeed.\n");
     }
-#ifdef DEBUG
-    while(1) {
-        wiced_rtos_delay_milliseconds(10000);
-    }
-#endif
+    const kii_author_t* author = tio_handler_get_author(&handler);
+    tio_handler_start(&handler, author, action_handler, NULL);
     return ERR_CMD_OK;
 }
 
 static const command_t commands[] =
 {
     //ALL_COMMANDS
-    {"onboard", onboard_command, 2, NULL, NULL, "[--vendor-thing-id/--thing-id]=* --passwod=*", ""},
+    {"onboard", onboard_command, 0, NULL, NULL, "[--vendor-thing-id/--thing-id]=* --passwod=*", ""},
     CMD_TABLE_END
 };
 /******************************************************

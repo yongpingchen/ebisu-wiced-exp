@@ -4,6 +4,8 @@
 #include "ebisu_environment_impl.h"
 #include "wiced_log.h"
 #include <command_console_commands.h>
+#include "kii.h"
+#include "tio.h"
 khc_sock_code_t socket_connect_cb_impl(
         void* socket_context,
         const char* host,
@@ -121,13 +123,17 @@ typedef struct {
     wiced_thread_t thread;
     KII_TASK_ENTRY entry;
     void* param;
+    void* userdata;
 } task_thread_arg_t;
 
 void task_thread_function( wiced_thread_arg_t arg ) {
-    task_thread_arg_t* task_arg = (task_thread_arg_t*)arg;
-
-    task_arg->entry(task_arg->param);
+    printf("task thread functions called\n");
+   task_thread_arg_t* task_arg = (task_thread_arg_t*)arg;
+   task_arg->entry(task_arg->param);
 }
+
+static task_thread_arg_t tio_mqtt_task;
+static task_thread_arg_t tio_updater_task;
 
 kii_task_code_t task_create_cb_impl(
         const char* name,
@@ -136,11 +142,21 @@ kii_task_code_t task_create_cb_impl(
         void* userdata)
 {
     unsigned int stk_size = WICED_DEFAULT_APPLICATION_STACK_SIZE;
-    unsigned int priority = WICED_NETWORK_WORKER_PRIORITY;
+    unsigned int priority = RTOS_DEFAULT_THREAD_PRIORITY;
     task_thread_arg_t *task_arg = NULL;
+
+    if (strcmp(name, TIO_TASK_NAME_UPDATE_STATE) == 0) {
+        task_arg = &tio_updater_task;
+    } else if (strcmp(name, KII_TASK_NAME_MQTT) == 0) {
+        task_arg = &tio_mqtt_task;
+    } else {
+        wiced_log_printf("unknown task name: %s\n", name);
+        return KII_TASKC_FAIL;
+    }
 
     task_arg->entry = entry;
     task_arg->param = param;
+    task_arg->userdata = userdata;
     if (wiced_rtos_create_thread(&(task_arg->thread), priority, name, task_thread_function, stk_size, task_arg) != WICED_SUCCESS) {
         wiced_log_printf("create thread [%s] failed.\n", name);
         return KII_TASKC_FAIL;
