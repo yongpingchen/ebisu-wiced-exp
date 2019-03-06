@@ -22,7 +22,7 @@ const char EX_APP_SITE[] = "api-jp.kii.com";
 
 #define EX_TO_RECV_SEC 20
 #define EX_TO_SEND_SEC 20
-#define EX_KEEP_ALIVE_SEC 600
+#define EX_KEEP_ALIVE_SEC 30
 #define EX_COMMAND_HANDLER_BUFF_SIZE 1024
 #define EX_MQTT_BUFF_SIZE 1024
 
@@ -43,6 +43,7 @@ static kii_bool_t action_handler(
     void* userdata)
 {
     // TODO: need implementation
+    printf("received actions, alias: %s, action:%s\n", action->alias, action->action_name);
     return KII_TRUE;
 }
 
@@ -51,7 +52,8 @@ static kii_bool_t custom_push_handler(
         size_t message_length,
         void* user_data)
 {
-    return KII_TRUE;
+    printf("push message: %s\n", message);
+    return KII_FALSE;
 }
 
 static void handler_init(
