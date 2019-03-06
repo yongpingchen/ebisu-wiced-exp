@@ -88,13 +88,57 @@ khc_sock_code_t socket_recv_cb_impl(
         wiced_packet_get_data(packet, offset, &data, &length, &total);
         *out_actual_length = MIN(length, length_to_read);
         memcpy(buffer, data, *out_actual_length);
-        buffer[*out_actual_length] = 0;
+        // buffer[*out_actual_length] = 0;
         offset += *out_actual_length;
         if (*out_actual_length < total) {
             context->packet = packet;
             context->packet_offset = offset;
         } else {
             context->received_all = 1;
+        }
+        return KHC_SOCK_OK;
+    } else {
+        return KHC_SOCK_FAIL;
+    }
+}
+
+khc_sock_code_t mqtt_socket_recv_cb_impl(
+        void* socket_context,
+        char* buffer,
+        size_t length_to_read,
+        size_t* out_actual_length)
+{
+    wiced_result_t ret = WICED_SUCCESS;
+    app_socket_context_t *context = (app_socket_context_t*)socket_context;
+    wiced_packet_t *packet = context->packet;
+    int offset = context->packet_offset;
+    if (packet == NULL) {
+        ret = wiced_tcp_receive(&(context->socket), &packet, 10000);
+        context->received_all = 0;
+        offset = 0;
+    }
+
+    if (context->received_all == 1) {
+
+    }
+    if (ret == WICED_SUCCESS) {
+        uint16_t        total;
+        uint16_t        length;
+        uint8_t*        data;
+
+        wiced_packet_get_data(packet, offset, &data, &length, &total);
+        *out_actual_length = MIN(length, length_to_read);
+        memcpy(buffer, data, *out_actual_length);
+        // buffer[*out_actual_length] = 0;
+        offset += *out_actual_length;
+        if (*out_actual_length < total) {
+            context->packet = packet;
+            context->packet_offset = offset;
+        } else {
+            wiced_packet_delete(packet);
+            context->packet = NULL;
+            context->packet_offset = 0;
+            return KHC_SOCK_OK;
         }
         return KHC_SOCK_OK;
     } else {

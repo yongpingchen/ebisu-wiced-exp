@@ -29,6 +29,12 @@ khc_sock_code_t socket_recv_cb_impl(
         size_t length_to_read,
         size_t* out_actual_length);
 
+khc_sock_code_t mqtt_socket_recv_cb_impl(
+        void* socket_context,
+        char* buffer,
+        size_t length_to_read,
+        size_t* out_actual_length);
+
 khc_sock_code_t socket_close_cb_impl(void* socket_context);
 
 void task_thread_function( wiced_thread_arg_t arg );

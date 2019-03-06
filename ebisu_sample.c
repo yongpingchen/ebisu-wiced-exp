@@ -80,7 +80,7 @@ static void handler_init(
 
     tio_handler_set_cb_sock_connect_mqtt(handler, socket_connect_cb_impl, mqtt_ssl_ctx);
     tio_handler_set_cb_sock_send_mqtt(handler, socket_send_cb_impl, mqtt_ssl_ctx);
-    tio_handler_set_cb_sock_recv_mqtt(handler, socket_recv_cb_impl, mqtt_ssl_ctx);
+    tio_handler_set_cb_sock_recv_mqtt(handler, mqtt_socket_recv_cb_impl, mqtt_ssl_ctx);
     tio_handler_set_cb_sock_close_mqtt(handler, socket_close_cb_impl, mqtt_ssl_ctx);
 
     tio_handler_set_mqtt_to_sock_recv(handler, EX_TO_RECV_SEC);
